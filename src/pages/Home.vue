@@ -19,19 +19,30 @@
         <div class="dataTableOfHome">
 
             <div class="left-column">
-                心电分析
+                <el-card :body-style="{ padding: '0px'}" class="box-card" >
+                    <img :src="picUrl" class="image" style="width: 100%; height: auto;">
+                    <div style="padding: 14px;">
+                        <span>心电分析</span>
+                        <div class="bottom clearfix">
+                            <time class="time">{{ currentDate }}</time>
+                        </div>
+                    </div>
+                </el-card>
             </div>
             <div class="right-column">
-                风险预测
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>风险预测</span>
+                    </div>
+                    <div class="text item">
+                        {{ grade }}
+                    </div>
+                    <div v-for="o in 4" :key="o" class="text item">
+                        {{'建议' + o}}
+                    </div>
+                </el-card>
             </div>
         </div>
-        <!--        建议-->
-        <div class="adviseOfHome">
-
-            建议在这里
-        </div>
-        <!-- data.push(this.signal[0])
-                this.signal.shift -->
 
     </div>
 </template>
@@ -58,7 +69,10 @@ export default {
     name: "Home",
     data() {
         return {
-            signal: []
+            signal: [],
+            grade: 0,
+            picUrl: "",
+            currentDate: new Date()
         }
     },
     methods: {
@@ -84,9 +98,9 @@ export default {
             var option;
             let count = 0;
             let index = 0; // 添加一个索引
-
+            let value = 0
             const randomData = () => {
-                let value = this.signal[index]; // 使用索引来访问数组
+                value = this.signal[index]; // 使用索引来访问数组
                 index++; // 增加索引
                 count++;
                 return {
@@ -98,8 +112,10 @@ export default {
                 };
             }
             let data = [];
+            let submitData = []
             for (var i = 0; i < 721; i++) {
-                data.push(randomData());
+                data.push(randomData())
+                submitData.push(value)
             }
 
             option = {
@@ -152,6 +168,8 @@ export default {
                 for (var i = 0; i < 9; i++) {
                     data.shift();
                     data.push(randomData());
+                    submitData.shift()
+                    submitData.push(value)
                 }
                 let minValue = Math.min(...data.map(item => item.value[0]));
                 let maxValue = Math.max(...data.map(item => item.value[0]));
@@ -170,8 +188,23 @@ export default {
                 });
             }, 25);
 
+            const predict = () => {
+                console.log(submitData);
+                this.request.post('/predict', { 'signal': submitData })
+                    .then(res => {
+                        this.picUrl = res.data.url
+                        this.grade = res.data.label
+                    })
+                this.currentDate = new Date()
+            }
+
+            setInterval(function () {
+                predict()
+            }, 10000);
+
             option && myChart.setOption(option);
-        }
+        },
+
     },
     created() {
         this.loadECG()
@@ -180,6 +213,29 @@ export default {
 </script>
 
 <style scoped>
+.text {
+    font-size: 14px;
+}
+
+.item {
+    margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
+}
+
+.box-card {
+    height: 287px;
+    margin: 10px;
+}
+
 .mainBodyOfHome {
     display: flex;
     width: 100%;
@@ -212,17 +268,17 @@ export default {
     flex: 5;
     height: 100%;
     width: 100%;
-    background-color: yellow;
+    background-color: white;
 }
 
 .left-column {
     flex: 1;
-    background-color: lightblue;
+    background-color: white;
 }
 
 .right-column {
     flex: 1;
-    background-color: lightgreen;
+    background-color: white;
 }
 
 .adviseOfHome {

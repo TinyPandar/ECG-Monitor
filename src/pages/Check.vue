@@ -1,75 +1,48 @@
 <template>
     <div class="mainBodyOfHome">
-        <!--    数据展示-->
-        <div class="dataDisplayOfHome">
-            <!--          标题  -->
-            <div class="headOfDataDisplay">
-                <span
-                    style="flex: 2;font-size: 12px;font-weight: bold;color: #4E5C72;justify-content: end;display: flex">
-                    以下数据实时更新
-                </span>
-            </div>
+        <el-carousel :interval="4000" type="card" height="400px">
+            <el-carousel-item v-for="item in 6" :key="item">
+                <div>
+                    <el-card :body-style="{ padding: '0px' }">
+                        <img src="../assets/images/BBB.png" class="image">
+                        <div style="padding: 14px;">
+                            <span>疑似1级风险</span>
+                            <el-descriptions title="用户信息">
+                                <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
+                                <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
+                                <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
+                                <el-descriptions-item label="备注">
+                                    <el-tag size="small">学校</el-tag>
+                                </el-descriptions-item>
+                                <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+                            </el-descriptions>
+                            <div class="bottom clearfix">
+                                <time class="time">{{ currentDate }}</time>
+                                <el-button type="text" class="button">回复</el-button>
+                            </div>
+                        </div>
+                    </el-card>
 
-        </div>
-        <!--        实时心电图-->
-        <div class="visualizationOfHome" id="visualizationOfHome">
-            <!-- <canvas id="canvas" width="480" height="160" style="background-color: whitesmoke;"></canvas> -->
-        </div>
-        <!--        心电分析+风险预测-->
-        <div class="dataTableOfHome">
-
-            <div class="left-column">
-                心电分析
-            </div>
-            <div class="right-column">
-                风险预测
-            </div>
-        </div>
-        <!--        建议-->
-        <div class="adviseOfHome">
-
-            建议在这里
-        </div>
-        <!-- data.push(this.signal[0])
-                this.signal.shift -->
-
+                </div>
+            </el-carousel-item>
+        </el-carousel>
     </div>
 </template>
 
+
 <script>
-import * as echarts from 'echarts/core';
-import {
-    TitleComponent,
-    TooltipComponent,
-    GridComponent
-} from 'echarts/components';
-import { LineChart } from 'echarts/charts';
-import { UniversalTransition } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
-echarts.use([
-    TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    LineChart,
-    CanvasRenderer,
-    UniversalTransition
-]);
+
 export default {
     name: "Home",
+
     data() {
         return {
             signal: []
         }
     },
+
     methods: {
-        parseCSV(csv) {
-            const rows = csv.split('\n');
-            const data = rows.map(row => {
-                const [index, value] = row.split(',');
-                return parseFloat(value);
-            });
-            return data;
-        },
+
         loadECG() {
             this.request.get("/static/sig/418.csv")
                 .then(res => {
@@ -77,98 +50,19 @@ export default {
                     console.log(this.signal[1])
                     this.drawECG()
                 })
-        },
-        drawECG() {
-            var chartDom = document.getElementById('visualizationOfHome');
-            const myChart = echarts.init(chartDom, null, { renderer: 'canvas' });
-            var option;
-            let count = 0;
-            let index = 0; // 添加一个索引
-
-            const randomData = () => {
-                let value = this.signal[index]; // 使用索引来访问数组
-                index++; // 增加索引
-                count++;
-                return {
-                    name: count,
-                    value: [
-                        count,
-                        value
-                    ]
-                };
-            }
-            let data = [];
-            for (var i = 0; i < 721; i++) {
-                data.push(randomData());
-            }
-
-            option = {
-                title: {
-                    text: 'Dynamic Data & Time Axis'
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        animation: false
-                    }
-                },
-                xAxis: {
-                    type: 'value',
-                    splitLine: {
-                        show: false
-                    },
-                    show: false,
-                },
-                yAxis: {
-                    type: 'value',
-                    boundaryGap: [0, 'mV'],
-                    splitLine: {
-                        show: false
-                    }
-                },
-                series: [
-                    {
-                        name: 'ECG Signal',
-                        type: 'line',
-                        showSymbol: false,
-                        data: data
-                    }
-                ]
-            };
-            setInterval(function () {
-                for (var i = 0; i < 9; i++) {
-                    data.shift();
-                    data.push(randomData());
-                }
-                let minValue = Math.min(...data.map(item => item.value[0]));
-                let maxValue = Math.max(...data.map(item => item.value[0]));
-
-                myChart.setOption({
-                    xAxis: {
-                        type: 'value',
-                        min: minValue,
-                        max: maxValue,
-                    },
-                    series: [
-                        {
-                            data: data
-                        }
-                    ]
-                });
-            }, 25);
-
-            option && myChart.setOption(option);
         }
+
     },
+
     created() {
         this.loadECG()
     }
+
 }
 </script>
 
 <style scoped>
 .mainBodyOfHome {
-    display: flex;
     width: 100%;
     height: 100%;
     background-image: radial-gradient(circle farthest-side at 10% 90%, #FFE8EA, #EDF3FF 70%, #EDF2FB);
@@ -247,5 +141,35 @@ export default {
     align-items: center;
     flex-direction: column;
     overflow: hidden;
+}
+
+.time {
+    font-size: 13px;
+    color: #999;
+}
+
+.bottom {
+    margin-top: 13px;
+    line-height: 12px;
+}
+
+.button {
+    padding: 0;
+    float: right;
+}
+
+.image {
+    width: 100%;
+    display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
 }
 </style>

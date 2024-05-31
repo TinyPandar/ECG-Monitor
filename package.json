@@ -21,6 +21,7 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@gradio/client": "^0.20.1",
     "@vue/cli-plugin-babel": "~4.5.15",
     "@vue/cli-plugin-eslint": "~4.5.15",
     "@vue/cli-service": "~4.5.15",

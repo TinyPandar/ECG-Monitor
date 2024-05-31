@@ -42,13 +42,14 @@ export default new VueRouter({
                     name: 'RecordDisplay',
                     component: () => import("../pages/RecordDisplay"),
                 },
+                {
+                    path: '/check',
+                    name: 'Check',
+                    component: () => import("../pages/Check")
+                },
             ]
         },
-        {
-            path: '/check',
-            name: 'Check',
-            component: () => import("../pages/Check")
-        },
+        
 
     ]
 })

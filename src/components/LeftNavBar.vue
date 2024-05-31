@@ -17,11 +17,11 @@
                        leave-active-class="animate__zoomOut"
                        appear
                >
-                <div v-show="flagOfShow" style="width: 100%;position: absolute">
-                    <router-link :to="{name:'Home'}" active-class="active" >实时信息</router-link>
-                    <router-link :to="{name:'RecordDisplay'}" active-class="active" >个人档案</router-link>
-                    <router-link :to="{name:'OldMessage'}" active-class="active" >历史记录</router-link>
-
+                <div style="width: 100%;position: absolute">
+                    <router-link v-show="flagOfShow" :to="{name:'Home'}" active-class="active" >实时信息</router-link>
+                    <router-link v-show="flagOfShow" :to="{name:'RecordDisplay'}" active-class="active" >个人档案</router-link>
+                    <router-link v-show="flagOfShow" :to="{name:'OldMessage'}" active-class="active" >历史记录</router-link>
+                    <router-link v-show="!flagOfShow" :to="{name:'Check'}" active-class="active" >检查</router-link>
                 </div>
                </transition>
                
@@ -49,10 +49,10 @@
         },
 
         mounted() {
-        //    绑定全局事件
             this.$bus.$on('updataAdurl',()=>{
                 this.user = localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{}
             })
+            this.flagOfShow = true
         },
         beforeDestroy() {
         //    解绑事件
