@@ -1,5 +1,4 @@
 <template>
-<!-- export NODE_OPTIONS=--openssl-legacy-provider -->
 	<router-view/>
 
 </template>
@@ -12,11 +11,6 @@
 			return {
 			}
 		},
-	// created(){
-	// 	this.$router.push({
-	// 		name:'login'
-	// 	})
-	// }
 	
 	}
 </script>

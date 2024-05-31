@@ -23,7 +23,7 @@ export default new VueRouter({
                 import("../pages/Manage.vue"),
             children: [
                 {
-                    path: 'OldMessage',
+                    path: 'oldMessage',
                     name: 'OldMessage',
                     component: () => import("../pages/OldMessage"),
                 },
@@ -37,76 +37,18 @@ export default new VueRouter({
                     name: 'PersonnelDetection',
                     component: () => import("../pages/PersonnelDetection"),
                 },
-                // {
-                //     path:'weather',
-                //     name:'Weather',
-                //     component: ()=> import("../pages/Weather"),
-                // },
-                // // {
-                //     path:'weather',
-                //     name:'Weather',
-                //     component: ()=> import("../pages/Weather"),
-                // },
-
                 {
-                    path: 'temperatureDetection',
-                    name: 'TemperatureDetection',
-                    component: () => import("../pages/TemperatureDetection"),
+                    path: 'recordDisplay',
+                    name: 'RecordDisplay',
+                    component: () => import("../pages/RecordDisplay"),
                 },
             ]
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // // 一级路由
-        // {
-        //     name: 'guanyu',
-        //     path: '/about',
-        //     component: About
-        // },
-        // {
-        //     path: '/home',
-        //     component: Home,
-        //     children: [
-        //         // 子路由
-        //         {
-        //             path: 'news',
-        //             component: News
-        //         },
-        //         {
-        //             path: 'Message',
-        //             component: Message,
-        //             children: [{
-        //                 name: 'xiangqing',
-        //                 path: 'detail',
-        //                 component: Detail,
-        //                 // 第一种写法 值为对象  该对象中的值都以props的形式传递个该组件
-        //                 // props: { a: 1, b: 'hello' }
-
-        //                 // props的第二种写法 值为布尔值 若布尔值为真 将所有的params属性传递给组件
-        //                 // props: true
-
-        //                 // 第三种：函数 
-        //                 props($route) {
-        //                     return { id: $route.query.id, title: $route.query.title }
-        //                 }
-        //             }]
-        //         }
-        //     ]
-        // },
+        },
+        {
+            path: '/check',
+            name: 'Check',
+            component: () => import("../pages/Check")
+        },
 
     ]
 })

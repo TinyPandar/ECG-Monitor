@@ -13,7 +13,7 @@
         </div>
         <!--        实时心电图-->
         <div class="visualizationOfHome" id="visualizationOfHome">
-
+            <!-- <canvas id="canvas" width="480" height="160" style="background-color: whitesmoke;"></canvas> -->
         </div>
         <!--        心电分析+风险预测-->
         <div class="dataTableOfHome">
@@ -104,7 +104,7 @@ export default {
 
             option = {
                 title: {
-                    text: '实时心电图'
+                    text: 'Dynamic Data & Time Axis'
                 },
                 tooltip: {
                     trigger: 'axis',
@@ -115,11 +115,7 @@ export default {
                 xAxis: {
                     type: 'value',
                     splitLine: {
-                        show: true, // Set show to true to display the grid lines
-                        lineStyle: {
-                            type: 'solid', // Set the line style to solid
-                            color: 'red' // Set the line color to red
-                        }
+                        show: false
                     },
                     show: false,
                 },
@@ -127,27 +123,18 @@ export default {
                     type: 'value',
                     boundaryGap: [0, 'mV'],
                     splitLine: {
-                        show: true, // Set show to true to display the grid lines
-                        lineStyle: {
-                            type: 'solid', // Set the line style to solid
-                            color: 'red' // Set the line color to red
-                        }
-                    },
-                    min: -1.5,
-                    max: 1.5
+                        show: false
+                    }
                 },
                 series: [
                     {
                         name: 'ECG Signal',
                         type: 'line',
                         showSymbol: false,
-                        lineStyle: {
-                            color: 'black'
-                        },
                         data: data
                     }
                 ]
-            }
+            };
             setInterval(function () {
                 for (var i = 0; i < 9; i++) {
                     data.shift();
@@ -204,7 +191,7 @@ export default {
     flex: 5;
     height: 100%;
     width: 100%;
-    background-color: white;
+    background-color: pink;
 }
 
 .dataTableOfHome {

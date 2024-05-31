@@ -157,6 +157,7 @@
                 this.request.put("info/"+this.user.id, this.userData).then(res=>{
                     if(res.status==="201"){
                         this.$message.success("更换成功!")
+                        this.$bus.$emit('updataAdurl')
                     }
                 })
             },
@@ -168,6 +169,7 @@
                         this.userData = res.data
                         this.user.adurl = this.userData.picture
                         localStorage.setItem("user",JSON.stringify(this.user))
+                        this.$bus.$emit('updataAdurl')
                     }
                 })
                 // 错误码500显示没创建info表，激活creatInfo事件

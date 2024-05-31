@@ -19,7 +19,7 @@
                >
                 <div v-show="flagOfShow" style="width: 100%;position: absolute">
                     <router-link :to="{name:'Home'}" active-class="active" >实时信息</router-link>
-                    <router-link :to="{name:'TemperatureDetection'}" active-class="active" >个人档案</router-link>
+                    <router-link :to="{name:'RecordDisplay'}" active-class="active" >个人档案</router-link>
                     <router-link :to="{name:'OldMessage'}" active-class="active" >历史记录</router-link>
 
                 </div>
@@ -50,10 +50,8 @@
 
         mounted() {
         //    绑定全局事件
-            this.$bus.$on('updataAdurl',(data)=>{
-
-                this.user.adurl = data;
-                console.log("@@@@@"+data)
+            this.$bus.$on('updataAdurl',()=>{
+                this.user = localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{}
             })
         },
         beforeDestroy() {
