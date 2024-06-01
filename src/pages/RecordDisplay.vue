@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card">
       <!-- 表格 -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" height="400" border style="width: 100%">
         <el-table-column fixed="left" label="操作" width="100">
           <template slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="primary" icon="el-icon-edit" size="small"
