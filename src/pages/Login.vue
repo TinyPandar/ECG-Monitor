@@ -46,20 +46,32 @@
                 <transition name="animate__animated animate__bounce" enter-active-class="animate__fadeInUp"
                     leave-active-class="animate__zoomOut" appear>
                     <!--            注册表单-->
-                    <div v-show="!isShow" class="registForm">
-                        <div style="flex: 1;display: flex;justify-content: center;align-items: center">
-                            用&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp;名:
+                    <div v-show="!isShow" class="registForm" style="display: grid; grid-template-columns: auto 1fr;">
+                        <div style="display: flex; justify-content: center; align-items: center">
+                            用户名:
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: center">
                             <el-input placeholder="请输入用户名" v-model="regUser.regUsername"
                                 style="width: 165px;margin-left: 10px" clearable>
                             </el-input>
                         </div>
-                        <div style="flex: 1;display: flex;justify-content: center;align-items: center">
-                            密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码:
-                            <el-input placeholder="请输入密码" style="width: 165px;margin-left: 10px"
-                                v-model="regUser.regPwd" show-password></el-input>
+                        <div style="display: flex; justify-content: center; align-items: top;">
+                            密码:
                         </div>
-                        <div style="flex: 1;display: flex;justify-content: center;align-items: center;">
-                            确&nbsp;认&nbsp;密&nbsp;码:
+                        <div
+                            style="display: flex; flex-direction: column; align-items: flex-start;margin-left: 10px">
+                            <el-input placeholder="请输入密码" style="width: 165px;"
+                                v-model="regUser.regPwd" show-password @input="validatePassword"></el-input>
+                            <el-progress style="width: 165px;" :percentage="progress" :format="format"
+                                :status="status"></el-progress>
+                            <p style="font-size: 12px;width: 165px;">
+                                请设置密码长度大于6位并至少包含数字和字母。
+                            </p>
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: center">
+                            确认密码:
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: center">
                             <el-input placeholder="请再次输入密码" style="width: 165px;margin-left: 10px"
                                 v-model="regUser.regRePwd" show-password></el-input>
                         </div>
@@ -154,10 +166,29 @@ export default {
                 borderbottomleftradius: '0px',
                 rightDis: '0px'
             },
-            isShow: true
+            passwordStrength: '非常弱',
+            isShow: true,
+            progress: 0,
+            progStatus: "warning"
         }
     },
     methods: {
+        format(percentage) {
+            switch (percentage) {
+                case 100:
+                    return '完美';
+                case 80:
+                    return '非常强';
+                case 60:
+                    return '强';
+                case 40:
+                    return '中等';
+                case 20:
+                    return '弱';
+                default:
+                    return '非常弱';
+            }
+        },
         changeToRegiest() {
             this.styleObj.bordertoprightradius = '0px'
             this.styleObj.borderbottomrightradius = '0px'
@@ -188,10 +219,27 @@ export default {
                     this.$message.error("用户名或密码错误！")
                 })
         },
+        validatePassword() {
+            this.progress = this.checkPasswordComplexity(this.regUser.regPwd);
+        },
         //用户注册
+        checkPasswordComplexity(password) {
+            let complexity = 0;
+
+            if (password.length >= 6) complexity += 20;
+            if (/[A-Z]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[a-z]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[0-9]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[^A-Za-z0-9]/.test(password) && complexity >= 20) complexity += 20;
+
+            return complexity
+        },
         userRegister() {
             if (this.regUser.regUsername === "") {
                 this.$message.error("用户名不能为空！")
+                return false
+            } else if (this.progress < 40) {
+                this.$message.error("密码强度太低！")
                 return false
             } else if (this.regUser.regPwd != this.regUser.regRePwd) {
                 this.$message.error("两次密码输入不同，请检查后重新注册！")

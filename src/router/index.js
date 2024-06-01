@@ -33,17 +33,12 @@ export default new VueRouter({
                     component: () => import("../pages/Home"),
                 },
                 {
-                    path: 'personnelDetection',
-                    name: 'PersonnelDetection',
-                    component: () => import("../pages/PersonnelDetection"),
-                },
-                {
                     path: 'recordDisplay',
                     name: 'RecordDisplay',
                     component: () => import("../pages/RecordDisplay"),
                 },
                 {
-                    path: '/check',
+                    path: 'check',
                     name: 'Check',
                     component: () => import("../pages/Check")
                 },
