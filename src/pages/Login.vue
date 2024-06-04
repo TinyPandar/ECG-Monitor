@@ -227,9 +227,8 @@ export default {
             let complexity = 0;
 
             if (password.length >= 6) complexity += 20;
-            if (/[A-Z]/.test(password) && complexity >= 20) complexity += 20;
-            if (/[a-z]/.test(password) && complexity >= 20) complexity += 20;
-            if (/[0-9]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[A-Z]/.test(password) && /[a-z]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[0-9]/.test(password) && (/[a-z]/.test(password) || /[A-Z]/.test(password)) && complexity >= 20) complexity += 20;
             if (/[^A-Za-z0-9]/.test(password) && complexity >= 20) complexity += 20;
 
             return complexity

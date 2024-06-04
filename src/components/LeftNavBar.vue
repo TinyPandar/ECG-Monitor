@@ -20,7 +20,7 @@
                 <div style="width: 100%;position: absolute">
                     <router-link v-show="flagOfShow" :to="{name:'Home'}" active-class="active" >实时信息</router-link>
                     <router-link v-show="flagOfShow" :to="{name:'RecordDisplay'}" active-class="active" >个人档案</router-link>
-                    <router-link v-show="flagOfShow" :to="{name:'OldMessage'}" active-class="active" >历史记录</router-link>
+                    <router-link v-show="flagOfShow" :to="{name:'Check'}" active-class="active" >历史记录</router-link>
                     <router-link v-show="!flagOfShow" :to="{name:'Check'}" active-class="active" >检查</router-link>
                 </div>
                </transition>
@@ -36,7 +36,7 @@
         data(){
             return{
                 withOfIconType:'100px',
-                flagOfShow:true,
+                flagOfShow:false,
                 flagOfPersonalCenter:true,
                 user: localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{},
             }

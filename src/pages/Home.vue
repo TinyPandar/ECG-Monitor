@@ -85,7 +85,7 @@ export default {
             return data;
         },
         loadECG() {
-            this.request.get("/static/sig/418.csv")
+            this.request.get("/static/sig/602.csv")
                 .then(res => {
                     this.signal = this.parseCSV(res.data)
                     console.log(this.signal[1])
@@ -149,8 +149,8 @@ export default {
                             color: 'red' // Set the line color to red
                         }
                     },
-                    min: -1.5,
-                    max: 1.5
+                    min: -2,
+                    max: 3
                 },
                 series: [
                     {
@@ -186,7 +186,7 @@ export default {
                         }
                     ]
                 });
-            }, 25);
+            }, 50);
 
             const predict = () => {
                 console.log(submitData);
@@ -200,7 +200,7 @@ export default {
 
             setInterval(function () {
                 predict()
-            }, 10000);
+            }, 5000);
 
             option && myChart.setOption(option);
         },
