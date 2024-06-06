@@ -1,32 +1,46 @@
 <template>
     <div class="mainBodyOfHome">
-        <el-carousel :interval="4000" type="card" height="400px">
-            <el-carousel-item v-for="item in 6" :key="item">
-                <div>
-                    <el-card :body-style="{ padding: '0px' }">
-                        <img src="../assets/images/BBB.png" class="image">
-                        <div style="padding: 14px;">
-                            <span>疑似1级风险</span>
-                            <el-descriptions title="用户信息">
-                                <el-descriptions-item label="年龄">34</el-descriptions-item>
-                                <el-descriptions-item label="性别">女</el-descriptions-item>
-                                <el-descriptions-item label="体重">60kg</el-descriptions-item>
-                                <el-descriptions-item label="身高">170</el-descriptions-item>
-                                <el-descriptions-item label="备注">
-                                    <el-tag size="small">无病史</el-tag>
-                                </el-descriptions-item>
-                                <!-- <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item> -->
-                            </el-descriptions>
-                            <div class="bottom clearfix">
-                                <time class="time">{{ currentDate }}</time>
-                                <el-button type="text" class="button">回复</el-button>
-                            </div>
+        <el-carousel :autoplay="!editDialogVisible" :interval="4000" type="card" height="620px">
+            <el-carousel-item v-for="item in signal" :key="item.id">
+                <el-card :body-style="{ padding: '0px' }">
+                    <el-skeleton-item v-show="!item.imageLoaded" variant="image" style="width: 480px; height: 240px;" />
+                    <img v-show="item.imageLoaded" :src="item.url" class="image" @load="item.imageLoaded = true">
+                    <div style="padding: 14px;">
+                        <span>{{ item.label }}</span>
+                        <el-descriptions title="用户信息">
+                            <el-descriptions-item label="年龄">{{ item.info.age }}</el-descriptions-item>
+                            <el-descriptions-item label="性别">{{ item.info.gender }}</el-descriptions-item>
+                            <el-descriptions-item label="体重">{{ item.info.weight }}</el-descriptions-item>
+                            <el-descriptions-item label="身高">{{ item.info.height }}</el-descriptions-item>
+                            <el-descriptions-item label="备注">
+                                {{ item.comment }}
+                            </el-descriptions-item>
+                        </el-descriptions>
+                        <div class="bottom clearfix">
+                            <el-button type="text" class="button" v-if="role === 'doctor'"
+                                @click="editDialogVisible = true; onEditID = item.abnormal_id">回复</el-button>
                         </div>
-                    </el-card>
+                        <el-table :data="item.archive" style="width: 100%" :height="200">
+                            <el-table-column prop="date" label="日期"></el-table-column>
+                            <el-table-column prop="disease" label="疾病"></el-table-column>
+                            <el-table-column prop="medicine" label="药物"></el-table-column>
+                        </el-table>
+                    </div>
 
-                </div>
+                </el-card>
             </el-carousel-item>
         </el-carousel>
+        <el-dialog title="编辑信息" :visible.sync="editDialogVisible" width="30%">
+            <el-form ref="editForm" :model="editForm" label-width="80px">
+                <el-form-item label="输入文本">
+                    <el-input v-model="editForm.comment"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="editDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="sendReview">保 存</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -38,25 +52,68 @@ export default {
 
     data() {
         return {
-            signal: []
+            imageLoaded: false,
+            signal: [],
+            editForm: {},
+            editDialogVisible: false,
+            onEditID: -1,
+            user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
+            username : localStorage.getItem("username"),
         }
     },
 
     methods: {
-
-        loadECG() {
-            this.request.get("/static/sig/418.csv")
-                .then(res => {
-                    this.signal = this.parseCSV(res.data)
-                    console.log(this.signal[1])
-                    this.drawECG()
+        loadReview() {
+            let url = '';
+            if (this.role === 'doctor') {
+                url = '/abnormal_signals';
+            } else {
+                url = `/abnormal_signals/${this.user.id}`; // assuming you have userId in your data
+            }
+            this.request.get(url)
+                .then((response) => {
+                    const promises = response.data.map(item =>
+                        this.request.get(`/info/${item.user_id}`)
+                            .then(infoResponse =>
+                                this.request.get(`/archives/${item.user_id}`)
+                                    .then(archiveResponse => {
+                                        const archives = archiveResponse.data.map(archive => ({
+                                            ...archive,
+                                            date: new Date(archive.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
+                                        }));
+                                        return { ...item, info: infoResponse.data, archive: archives, imageLoaded: false };
+                                    })
+                            )
+                    );
+                    return Promise.all(promises);
                 })
+                .then((results) => {
+                    this.signal = results;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        sendReview(index) {
+            this.request.put("/abnormal_signals/" + this.onEditID + "/comments", { "comment": this.editForm.comment })
+                .then((response) => {
+                    this.editDialogVisible = false;
+                    const index = this.signal.findIndex((it) => it.abnormal_id === this.onEditID);
+                    if (index !== -1) {
+                        this.signal[index].comment = this.editForm.comment;
+                    }
+                    this.editForm.comment = ""
+                    // this.loadReview()
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
-
     },
 
     created() {
-        this.loadECG()
+        this.role = this.username.startsWith('doc_') ? 'doctor' : 'user'
+        this.loadReview()
     }
 
 }

@@ -58,12 +58,10 @@
                         <div style="display: flex; justify-content: center; align-items: top;">
                             密码:
                         </div>
-                        <div
-                            style="display: flex; flex-direction: column; align-items: flex-start;margin-left: 10px">
-                            <el-input placeholder="请输入密码" style="width: 165px;"
-                                v-model="regUser.regPwd" show-password @input="validatePassword"></el-input>
-                            <el-progress style="width: 165px;" :percentage="progress" :format="format"
-                                :status="status"></el-progress>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;margin-left: 10px">
+                            <el-input placeholder="请输入密码" style="width: 165px;" v-model="regUser.regPwd" show-password
+                                @input="validatePassword"></el-input>
+                            <el-progress style="width: 165px;" :percentage="progress" :format="format"></el-progress>
                             <p style="font-size: 12px;width: 165px;">
                                 请设置密码长度大于6位并至少包含数字和字母。
                             </p>
@@ -152,7 +150,6 @@ export default {
                 username: "",
                 password: ""
             },
-
             admins: {},
             regUser: {
                 regUsername: '',
@@ -211,8 +208,13 @@ export default {
                 .then(res => {
                     if (res.status == "201") {
                         localStorage.setItem("user", JSON.stringify(res.data))
+                        localStorage.setItem("username", this.loginUser.username); // 存储 username
                         this.$message.success("登陆成功！")
-                        this.$router.push("/manage")
+                        if (this.loginUser.username.startsWith('doc_')) {
+                            this.$router.push("/manage/check")
+                        } else {
+                            this.$router.push("/manage")
+                        }
                     }
                 })
                 .catch(err => {
@@ -229,7 +231,7 @@ export default {
             if (password.length >= 6) complexity += 20;
             if (/[A-Z]/.test(password) && /[a-z]/.test(password) && complexity >= 20) complexity += 20;
             if (/[0-9]/.test(password) && (/[a-z]/.test(password) || /[A-Z]/.test(password)) && complexity >= 20) complexity += 20;
-            if (/[^A-Za-z0-9]/.test(password) && complexity >= 20) complexity += 20;
+            if (/[^A-Za-z0-9]/.test(password) && complexity >= 20) complexity += 40;
 
             return complexity
         },
