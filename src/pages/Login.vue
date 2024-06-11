@@ -139,7 +139,6 @@
 
 <script>
 import 'animate.css';
-// eslint-disable-next-line no-unused-vars
 import axios, { Axios as request } from "axios";
 export default {
 
@@ -273,14 +272,16 @@ export default {
 </script>
 
 <style>
-/* @import '../assets/css/Login.css' */
 .base {
     height: 100vh;
+    background-color: #257B5E;
     display: flex;
     justify-content: center;
     align-items: center;
+    display: flex;
     background-image: url("../assets/images/background.png");
     background-size: 100%;
+    position: relative;
 }
 
 .loginAndRegist {
@@ -327,12 +328,11 @@ export default {
     top: 0;
     right: 0;
     background-image: url("../assets/images/welcome.png");
-    background-size: 90%;
+    background-size: 105%;
 }
 
 .showInfo:hover {
     background-size: 100%;
-    background-position: -50px -50px;
 }
 
 .title {

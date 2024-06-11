@@ -19,7 +19,7 @@
         <div class="dataTableOfHome">
 
             <div class="left-column">
-                <el-card :body-style="{ padding: '0px'}" class="box-card" >
+                <el-card :body-style="{ padding: '0px' }" class="box-card">
                     <img :src="picUrl" class="image" style="width: 100%; height: auto;">
                     <div style="padding: 14px;">
                         <span>心电分析</span>
@@ -34,11 +34,14 @@
                     <div slot="header" class="clearfix">
                         <span>风险预测</span>
                     </div>
-                    <div class="text item">
-                        {{ grade }}
-                    </div>
-                    <div v-for="o in 4" :key="o" class="text item">
-                        {{'建议' + o}}
+                    <div v-if="grade in grades" >
+                        <h3 style="margin: 0;">{{ grades[grade].label }}</h3>
+                        <i>{{ grades[grade].characteristics }}</i>
+                        <ul>
+                            <li v-for="(advice, index) in grades[grade].advice" :key="index">
+                                {{ advice }}
+                            </li>
+                        </ul>
                     </div>
                 </el-card>
             </div>
@@ -72,7 +75,45 @@ export default {
             signal: [],
             grade: 0,
             picUrl: "",
-            currentDate: new Date()
+            currentDate: new Date(),
+            grade: 0, // the current grade
+            grades: {
+                0: {
+                    label: '暂无信号',
+                    characteristics: '请耐心等待几秒',
+                    advice: ['',
+                        '',
+                        ''],
+                },
+                'Grade 0': {
+                    label: '健康心电图',
+                    characteristics: '正常心率60-100次/分钟，P波、QRS波、T波正常，PR间期0.12-0.20秒，ST段水平。',
+                    advice: ['即使您的心电图显示完全健康，仍然建议保持良好的生活习惯和定期检查，以确保持续健康。',
+                        '保持均衡饮食和适量运动。定期进行年度体检和心电图检查。',
+                        '注意身体异常信号，及时就医。'],
+                },
+                'Grade 1': {
+                    label: '普通心电图',
+                    characteristics: '心电图正常或只有轻微异常，一般不会对您的健康造成重大影响。',
+                    advice: ['注意观察：如果您感觉不适，请注意观察自己的身体状况。如果症状持续或加重，尽快就医。',
+                        '定期检查：即使心电图显示只有轻微异常，定期检查仍然是保持健康的好方法。根据医生的建议，安排后续的体检或心电图检查。',
+                        '保持健康生活方式：尽量保持健康的生活方式，包括均衡饮食、适量运动和充足的休息。'],
+                },
+                'Grade 2': {
+                    label: '预警心电图',
+                    characteristics: '心电图显示有异常，但目前尚未对您的健康构成严重威胁，但可能会恶化。',
+                    advice: ['尽快就医：尽快前往最近的医院或心内科门诊进行详细检查和治疗，不要拖延。',
+                        '避免剧烈活动：在前往医院之前，避免剧烈运动或其他可能加重病情的活动。',
+                        '告知医生：到达医院后，向医生提供远程心电图的异常信息，帮助医生快速了解您的情况。'],
+                },
+                'Grade 3': {
+                    label: '危急心电图',
+                    characteristics: '心电图显示可能导致严重健康问题或生命危险的情况。',
+                    advice: ['立即就医：如果您接收到此类提示，请立即拨打急救电话（如120）并寻求紧急医疗服务。不要自行前往医院，应等待急救车到达。',
+                        '保持冷静：在等待急救车到来的过程中，尽量保持平静，减少活动量。',
+                        '通知家人或朋友：尽快告知身边的人，以便他们能够在急救人员到达前提供帮助。'],
+                },
+            },
         }
     },
     methods: {
