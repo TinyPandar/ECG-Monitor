@@ -1,6 +1,6 @@
 <template>
     <div class="mainBodyOfHome">
-        <el-carousel :autoplay="!editDialogVisible" :interval="4000" type="card" height="620px">
+        <el-carousel v-if="!noSignal" :autoplay="!editDialogVisible" :interval="4000" type="card" height="620px">
             <el-carousel-item v-for="item in signal" :key="item.id">
                 <el-card :body-style="{ padding: '0px' }">
                     <el-skeleton-item v-show="!item.imageLoaded" variant="image" style="width: 480px; height: 240px;" />
@@ -30,6 +30,7 @@
                 </el-card>
             </el-carousel-item>
         </el-carousel>
+        <el-empty  v-if="noSignal" :description="descriptionString"></el-empty>
         <el-dialog title="编辑信息" :visible.sync="editDialogVisible" width="30%">
             <el-form ref="editForm" :model="editForm" label-width="80px">
                 <el-form-item label="输入文本">
@@ -58,7 +59,10 @@ export default {
             editDialogVisible: false,
             onEditID: -1,
             user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
-            username : localStorage.getItem("username"),
+            username: localStorage.getItem("username"),
+            noSignal:false,
+            role:'user',
+            descriptionString : "目前没有记录的异常心电图呢，您的身体很健康！"
         }
     },
 
@@ -66,13 +70,15 @@ export default {
         loadReview() {
             let url = '';
             if (this.role === 'doctor') {
-                url = '/abnormal_signals';
+                url = '/abnormal_signals/no_comment';
             } else {
                 url = `/abnormal_signals/${this.user.id}`; // assuming you have userId in your data
             }
+            this.descriptionString = this.role == 'user' ? "目前没有记录的异常心电图呢，您的身体很健康！" : "目前没有记录的异常心电图呢，您请休息一下吧！"
             this.request.get(url)
                 .then((response) => {
-                    const promises = response.data.map(item =>
+                    const firstTenItems = response.data.slice(0, 10);
+                    const promises = firstTenItems.map(item =>
                         this.request.get(`/info/${item.user_id}`)
                             .then(infoResponse =>
                                 this.request.get(`/archives/${item.user_id}`)
@@ -91,7 +97,12 @@ export default {
                     this.signal = results;
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if(error.response.status == '404'){
+                        this.signal = [];
+                        this.noSignal = true
+                    }else{
+                        console.log(error);
+                    }
                 });
         },
         sendReview(index) {

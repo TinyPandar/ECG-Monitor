@@ -20,7 +20,8 @@
 
             <div class="left-column">
                 <el-card :body-style="{ padding: '0px' }" class="box-card">
-                    <img :src="picUrl" class="image" style="width: 100%; height: auto;">
+                    <el-skeleton-item v-show="picUrl==''" variant="image" style="width: 428px; height: 214px;" />
+                    <img v-show="picUrl!=''" :src="picUrl" class="image" style="width: 100%; height: auto;">
                     <div style="padding: 14px;">
                         <span>心电分析</span>
                         <div class="bottom clearfix">
@@ -31,12 +32,10 @@
             </div>
             <div class="right-column">
                 <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <span>风险预测</span>
-                    </div>
-                    <div v-if="grade in grades" >
+                    <div v-if="grade in grades">
                         <h3 style="margin: 0;">{{ grades[grade].label }}</h3>
                         <i>{{ grades[grade].characteristics }}</i>
+                        <el-divider content-position="left">建议</el-divider>
                         <ul>
                             <li v-for="(advice, index) in grades[grade].advice" :key="index">
                                 {{ advice }}
@@ -126,12 +125,21 @@ export default {
             return data;
         },
         loadECG() {
-            this.request.get("/static/sig/602.csv")
-                .then(res => {
-                    this.signal = this.parseCSV(res.data)
-                    console.log(this.signal[1])
-                    this.drawECG()
+            fetch('100MLII.csv')
+                .then(response => response.text())
+                .then(data => {
+                    this.signal = this.parseCSV(data);
+                    this.drawECG();
                 })
+                .catch(error => console.error('Error:', error));
+
+
+            // this.request.get("/static/sig/602.csv")
+            //     .then(res => {
+            //         this.signal = this.parseCSV(res.data)
+            //         console.log(this.signal[1])
+            //         this.drawECG()
+            //     })
         },
         drawECG() {
             var chartDom = document.getElementById('visualizationOfHome');
@@ -190,8 +198,8 @@ export default {
                             color: 'red' // Set the line color to red
                         }
                     },
-                    min: -2,
-                    max: 3
+                    min: -1,
+                    max: 1.5
                 },
                 series: [
                     {
@@ -227,10 +235,10 @@ export default {
                         }
                     ]
                 });
-            }, 50);
+            }, 25);
 
             const predict = () => {
-                console.log(submitData);
+                // console.log(submitData);
                 this.request.post('/predict', { 'signal': submitData })
                     .then(res => {
                         this.picUrl = res.data.url
@@ -238,10 +246,10 @@ export default {
                     })
                 this.currentDate = new Date()
             }
-
+            predict()
             setInterval(function () {
                 predict()
-            }, 5000);
+            }, 2000);
 
             option && myChart.setOption(option);
         },

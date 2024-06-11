@@ -108,12 +108,9 @@
                             <el-button type="success" style="background-color:#257B5E;border: 1px solid #ffffff;" round
                                 @click="changeToRegiest">还没有账户？点击注册</el-button>
                         </div>
+                        <el-footer > <el-button type="primary" @click="showHelp=true">帮助 <i class="el-icon-info"></i></el-button></el-footer>
                     </div>
                 </transition>
-                <!-- 用户输入用户名时展示头像以及姓名 -->
-                <!--           <div>-->
-
-                <!--           </div>-->
                 <transition name="animate__animated animate__bounce" enter-active-class="animate__fadeInUp"
                     leave-active-class="animate__zoomOut" appear>
                     <!-- 用户注册的时候展示信息 -->
@@ -129,20 +126,28 @@
                             <el-button type="success" style="background-color:#257B5E;border: 1px solid #ffffff;" round
                                 @click="changeToLogin">已有账户？点击登录</el-button>
                         </div>
+                        <el-footer > <el-button type="primary" @click="showHelp=true">帮助 <i class="el-icon-info"></i></el-button></el-footer>
                     </div>
                 </transition>
             </div>
         </div>
-
+        <el-dialog title="帮助" :visible.sync="showHelp" >
+            <span><Help/></span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="showHelp = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import 'animate.css';
 import axios, { Axios as request } from "axios";
+import Help from "../components/Help";
 export default {
 
     name: 'Login',
+    components: { Help },
     data() {
         return {
             loginUser: {
@@ -165,7 +170,8 @@ export default {
             passwordStrength: '非常弱',
             isShow: true,
             progress: 0,
-            progStatus: "warning"
+            progStatus: "warning",
+            showHelp : false,
         }
     },
     methods: {
@@ -280,7 +286,8 @@ export default {
     align-items: center;
     display: flex;
     background-image: url("../assets/images/background.png");
-    background-size: 100%;
+    background-repeat: no-repeat; /* 防止背景图像重复 */
+    background-size: cover; /* 让背景图像充满整个元素 */
     position: relative;
 }
 

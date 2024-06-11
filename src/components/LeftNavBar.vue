@@ -4,8 +4,7 @@
             <!--            头像区-->
             <div class="profileArea">
                 <el-tooltip class="item" effect="dark" content="个人中心" placement="bottom">
-                    <img v-if="user.adurl" :src="user.adurl" @click="personalCenterApper">
-                    <img v-if="!user.adurl" src="../assets/images/touxiang.png" @click="personalCenterApper">
+                    <img :src="avatar" @click="personalCenterAppear">
                 </el-tooltip>
             </div>
             <!--           导航栏区-->
@@ -17,17 +16,22 @@
                         <router-link v-show="flagOfShow" :to="{ name: 'Home' }" active-class="active">实时信息</router-link>
                         <router-link v-show="flagOfShow" :to="{ name: 'RecordDisplay' }"
                             active-class="active">个人档案</router-link>
-                        <router-link v-show="flagOfShow" :to="{ name: 'Check' }" active-class="active">历史记录</router-link>
+                        <router-link v-show="flagOfShow" :to="{ name: 'Check' }"
+                            active-class="active">历史记录</router-link>
                         <router-link v-show="!flagOfShow" :to="{ name: 'Check' }" active-class="active">检查</router-link>
                     </div>
                 </transition>
-
             </div>
+            <el-footer > <el-button @click="showingHelp">帮助 <i class="el-icon-info"></i></el-button></el-footer>
         </div>
+       
     </div>
+
+
 </template>
 
 <script>
+
 export default {
     name: "LeftNavBar",
     data() {
@@ -36,6 +40,7 @@ export default {
             flagOfShow: false,
             flagOfPersonalCenter: true,
             user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
+            avatar: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png",
         }
     },
     created() {
@@ -43,19 +48,20 @@ export default {
         this.flagOfShow = !username.includes('doc_'); // 检查 username 是否包含 "doc_"
     },
     methods: {
-        personalCenterApper() {
-            // this.flagOfPersonalCenter = !this.flagOfPersonalCenter
+        personalCenterAppear() {
             this.$bus.$emit("personalCenterChange", this.flagOfPersonalCenter)
+        },
+        showingHelp(){
+            this.$bus.$emit("showHelp",true)
         }
     },
 
     mounted() {
         this.$bus.$on('updataAdurl', () => {
-            this.user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {}
+            this.avatar = JSON.parse(localStorage.getItem("user")).adurl
         })
     },
     beforeDestroy() {
-        //    解绑事件
         this.$bus.$off('updataAdurl')
     }
 

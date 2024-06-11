@@ -7,7 +7,7 @@ import * as echarts from 'echarts'
 import vueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import router from './router'
-
+import './assets/css/element-#13BA82/index.css'
 
 Vue.use(ElementUI,{size:'mini'});
 Vue.config.productionTip = false
