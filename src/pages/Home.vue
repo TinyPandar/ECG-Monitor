@@ -20,8 +20,8 @@
 
             <div class="left-column">
                 <el-card :body-style="{ padding: '0px' }" class="box-card">
-                    <el-skeleton-item v-show="picUrl==''" variant="image" style="width: 428px; height: 214px;" />
-                    <img v-show="picUrl!=''" :src="picUrl" class="image" style="width: 100%; height: auto;">
+                    <el-skeleton-item v-show="picUrl == ''" variant="image" style="width: 428px; height: 214px;" />
+                    <img v-show="picUrl != ''" :src="picUrl" class="image" style="width: 100%; height: auto;">
                     <div style="padding: 14px;">
                         <span>心电分析</span>
                         <div class="bottom clearfix">
@@ -113,6 +113,7 @@ export default {
                         '通知家人或朋友：尽快告知身边的人，以便他们能够在急救人员到达前提供帮助。'],
                 },
             },
+            username: localStorage.getItem("username"),
         }
     },
     methods: {
@@ -125,21 +126,25 @@ export default {
             return data;
         },
         loadECG() {
-            fetch('106MLII.csv')
-                .then(response => response.text())
-                .then(data => {
-                    this.signal = this.parseCSV(data);
-                    this.drawECG();
-                })
-                .catch(error => console.error('Error:', error));
+            if (!this.username.startsWith('doc_')) {
+                if (this.username.startsWith('bad_')) {
+                    this.request.get("/static/sig/602.csv")
+                        .then(res => {
+                            this.signal = this.parseCSV(res.data)
+                            console.log(this.signal[1])
+                            this.drawECG()
+                        })
+                } else {
 
-
-            // this.request.get("/static/sig/602.csv")
-            //     .then(res => {
-            //         this.signal = this.parseCSV(res.data)
-            //         console.log(this.signal[1])
-            //         this.drawECG()
-            //     })
+                    fetch('106MLII.csv')
+                        .then(response => response.text())
+                        .then(data => {
+                            this.signal = this.parseCSV(data);
+                            this.drawECG();
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }
         },
         drawECG() {
             var chartDom = document.getElementById('visualizationOfHome');
