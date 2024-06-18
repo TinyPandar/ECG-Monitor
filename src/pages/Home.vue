@@ -125,7 +125,7 @@ export default {
             return data;
         },
         loadECG() {
-            fetch('100MLII.csv')
+            fetch('106MLII.csv')
                 .then(response => response.text())
                 .then(data => {
                     this.signal = this.parseCSV(data);
